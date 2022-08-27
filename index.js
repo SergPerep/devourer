@@ -20,7 +20,7 @@ const getFood = async (url) => {
         document
           .querySelector("table th:nth-child(2)")
           .textContent.toLowerCase()
-          .match(/\d+ *(g|ml|l|gram|milliliter)/i)[0]
+          .match(/\d+ *(gram|ml|l|g|milliliter)/i)[0]
     );
 
     const brand = await page.evaluate(() =>
@@ -51,18 +51,31 @@ const getFood = async (url) => {
         const dd = dlNodeList[index].querySelector("dd");
         return dd.textContent;
       }, null);
-      return portionSize.match(/\d+ *(g|ml|l|gram|milliliter)/i)[0];
+      return portionSize.match(/\d+ *(gram|ml|l|g|milliliter)/i)[0];
     });
 
-    const foodItem = {
-      title: h1,
-      brand,
-      per,
-      nutrition,
-      portionSize,
-    };
+    const packageSize = await page.evaluate(() => {
+      const productInfoNodeList = document.querySelectorAll(
+        ".product-info-content-block"
+      );
+      const productInfo = [...productInfoNodeList].find((item) =>
+        item.querySelector("h4").textContent.match(/gewicht/i) ? true : false
+      );
+      return productInfo.querySelector("h4 + p").textContent;
+    });
 
-    console.log(foodItem);
+    const foodItem = [
+      {
+        title: h1,
+        brand,
+        packageSize,
+        per,
+        ...nutrition,
+        portionSize,
+      },
+    ];
+
+    console.table(foodItem);
     await browser.close();
   } catch (error) {
     return console.error(error);
