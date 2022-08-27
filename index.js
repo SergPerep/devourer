@@ -1,85 +1,120 @@
 import puppeteer from "puppeteer";
-const args = process.argv;
-const url = args[2];
+import urls from "./urls.js";
+// const args = process.argv;
+// const url = args[2];
 
-const getFood = async (url) => {
+const getFood = async (url, page) => {
   try {
-    // const regEx = /\d+ *(g|ml|l|gram|milliliter)/i;
-    // const regEx = new RegExp(/\d+ *(g|ml|l|gram|milliliter)/, "i");
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
     await page.goto(url);
-    // await page.click("#accept-cookies");
-    // await page.screenshot({ path: "./screenshots/example.png" });
-    const h1 = await page.evaluate(() => {
-      const headers = document.querySelectorAll("h1");
-      return headers[headers.length - 1].textContent;
-    });
-    const per = await page.evaluate(
-      () =>
-        document
+    const foodItem = await page.evaluate(() => {
+      const regex = /\d+ *(gram|ml|l|g|milliliter|liter|kilogram)/i;
+
+      // TITLE
+      const getTitle = () => {
+        const headers = document.querySelectorAll("h1");
+        if (!headers || headers.length === 0) {
+          console.error("~~ Can't find <h1> on a page");
+          return null;
+        }
+        const title = headers[headers.length - 1].textContent;
+        if (!title) {
+          console.error("~~ <h1> is empty");
+          return null;
+        }
+        return title;
+      };
+
+      // PER
+      const getPer = () => {
+        return document
           .querySelector("table th:nth-child(2)")
           .textContent.toLowerCase()
-          .match(/\d+ *(gram|ml|l|g|milliliter)/i)[0]
-    );
+          .match(regex)[0];
+      };
 
-    const brand = await page.evaluate(() =>
-      document
-        .querySelector(".brand-button")
-        .textContent.replace(/Alles van /, "")
-    );
+      // BRAND
+      const getBrand = () => {
+        return document
+          .querySelector(".brand-button")
+          .textContent.replace(/Alles van /, "");
+      };
 
-    const nutrition = await page.evaluate(() => {
-      const tdArr = document.querySelectorAll("table tr td");
-      const nutrition = [...tdArr].reduce((prevVal, curVal, index) => {
-        if (curVal.textContent === "Vet")
-          return { ...prevVal, fats: tdArr[index + 1].textContent };
-        if (curVal.textContent === "Koolhydraten")
-          return { ...prevVal, carbohydrates: tdArr[index + 1].textContent };
-        if (curVal.textContent === "Eiwitten")
-          return { ...prevVal, proteins: tdArr[index + 1].textContent };
-        return prevVal;
-      }, {});
-      return nutrition;
-    });
+      // NUTRITION
+      getNutrition = () => {
+        const tdArr = document.querySelectorAll("table tr td");
+        const nutrition = [...tdArr].reduce((prevVal, curVal, index) => {
+          if (curVal.textContent === "Vet")
+            return { ...prevVal, fats: tdArr[index + 1].textContent };
+          if (curVal.textContent === "Koolhydraten")
+            return { ...prevVal, carbohydrates: tdArr[index + 1].textContent };
+          if (curVal.textContent === "Eiwitten")
+            return { ...prevVal, proteins: tdArr[index + 1].textContent };
+          return prevVal;
+        }, {});
+        return nutrition;
+      };
 
-    const portionSize = await page.evaluate(() => {
-      const dlNodeList = document.querySelectorAll("dl");
-      const portionSize = [...dlNodeList].reduce((prevVal, curVal, index) => {
-        const dt = curVal.querySelector("dt");
-        if (!dt.textContent.match(/Portiegrootte/)) return prevVal;
-        const dd = dlNodeList[index].querySelector("dd");
-        return dd.textContent;
-      }, null);
-      return portionSize.match(/\d+ *(gram|ml|l|g|milliliter)/i)[0];
-    });
+      // PORTION SIZE
+      const getPortionSize = () => {
+        const dlNodeList = document.querySelectorAll("dl");
+        const portionSize = [...dlNodeList].reduce((prevVal, curVal, index) => {
+          const dt = curVal.querySelector("dt");
+          if (!dt.textContent.match(/Portiegrootte/)) return prevVal;
+          const dd = dlNodeList[index].querySelector("dd");
+          return dd.textContent;
+        }, null);
+        return portionSize.match(regex)[0];
+      };
 
-    const packageSize = await page.evaluate(() => {
-      const productInfoNodeList = document.querySelectorAll(
-        ".product-info-content-block"
-      );
-      const productInfo = [...productInfoNodeList].find((item) =>
-        item.querySelector("h4").textContent.match(/gewicht/i) ? true : false
-      );
-      return productInfo.querySelector("h4 + p").textContent;
-    });
+      // PACKAGE SIZE
+      const getPackageSize = () => {
+        const productInfoNodeList = document.querySelectorAll(
+          ".product-info-content-block"
+        );
+        const productInfo = [...productInfoNodeList].find((item) =>
+          item.querySelector("h4").textContent.match(/gewicht/i) ? true : false
+        );
+        return productInfo.querySelector("h4 + p").textContent;
+      };
 
-    const foodItem = [
-      {
-        title: h1,
+      const title = getTitle();
+      const brand = getBrand();
+      const packageSize = getPackageSize();
+      const per = getPer();
+      const nutrition = getNutrition();
+      const portionSize = getPortionSize();
+      return {
+        title,
         brand,
         packageSize,
         per,
         ...nutrition,
         portionSize,
-      },
-    ];
-
-    console.table(foodItem);
-    await browser.close();
+      };
+    });
+    return foodItem;
   } catch (error) {
     return console.error(error);
   }
 };
 
-getFood(url);
+const scrap = async (urls) => {
+  const browser = await puppeteer.launch();
+  try {
+    const page = await browser.newPage();
+
+    let foods = [];
+    for (const url of urls) {
+      const food = await getFood(url, page);
+      foods = [...foods, food];
+    }
+
+    console.table(foods);
+    await browser.close();
+  } catch (error) {
+    console.error(error);
+    await browser.close();
+  }
+};
+
+scrap(urls);
