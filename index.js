@@ -42,13 +42,25 @@ const getFood = async (url, page) => {
       // NUTRITION
       getNutrition = () => {
         const tdArr = document.querySelectorAll("table tr td");
+        const convertToNumber = (str) => {
+          return parseFloat(str.replace(/ g/, ""));
+        };
         const nutrition = [...tdArr].reduce((prevVal, curVal, index) => {
           if (curVal.textContent === "Vet")
-            return { ...prevVal, fats: tdArr[index + 1].textContent };
+            return {
+              ...prevVal,
+              fats: convertToNumber(tdArr[index + 1].textContent),
+            };
           if (curVal.textContent === "Koolhydraten")
-            return { ...prevVal, carbohydrates: tdArr[index + 1].textContent };
+            return {
+              ...prevVal,
+              carbohydrates: convertToNumber(tdArr[index + 1].textContent),
+            };
           if (curVal.textContent === "Eiwitten")
-            return { ...prevVal, proteins: tdArr[index + 1].textContent };
+            return {
+              ...prevVal,
+              proteins: convertToNumber(tdArr[index + 1].textContent),
+            };
           return prevVal;
         }, {});
         return nutrition;
