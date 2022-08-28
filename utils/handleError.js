@@ -1,0 +1,1 @@
+const handleError = (err) => {};
