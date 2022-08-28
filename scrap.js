@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import getFood from "./ah.js";
+import config from "./config.js";
 
 const scrap = async (urls) => {
   const browser = await puppeteer.launch();
@@ -12,7 +13,12 @@ const scrap = async (urls) => {
       foods = [...foods, food];
     }
 
-    console.table(foods);
+    if (config.logResultsAs === "tables") {
+      console.table(foods);
+    } else {
+      console.log(foods);
+    }
+
     await browser.close();
   } catch (error) {
     console.error(error);

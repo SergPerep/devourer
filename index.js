@@ -1,10 +1,10 @@
 // import handleError from "./utils/handleError.js";
 import log from "./utils/log.js";
 import scrap from "./scrap.js";
+import fs from "fs";
 const args = process.argv;
 const inputStr = args[2];
 
-import fs from "fs";
 const route = (inputStr) => {
   // If inputStr is a url
   const urlRegex = /(https|http):\/\//i;
