@@ -7,15 +7,8 @@ const getFood = async (url, page) => {
       // TITLE
       const getTitle = () => {
         const headers = document.querySelectorAll("h1");
-        if (!headers || headers.length === 0) {
-          log.red("~~ Can't find <h1> on a page: " + url);
-          return null;
-        }
-        const title = headers[headers.length - 1].textContent;
-        if (!title) {
-          log.red("~~ <h1> is empty: " + url);
-          return null;
-        }
+        if (!headers || headers.length === 0) return undefined;
+        const title = headers[headers.length - 1]?.textContent;
         return title;
       };
 
@@ -23,39 +16,43 @@ const getFood = async (url, page) => {
       const getPer = () => {
         return document
           .querySelector("table th:nth-child(2)")
-          .textContent.toLowerCase()
-          .match(regex)[0];
+          ?.textContent?.toLowerCase()
+          ?.match(regex)[0];
       };
 
       // BRAND
       const getBrand = () => {
         return document
           .querySelector(".brand-button")
-          .textContent.replace(/Alles van /, "");
+          ?.textContent?.replace(/Alles van /, "");
       };
 
       // NUTRITION
       getNutrition = () => {
         const tdArr = document.querySelectorAll("table tr td");
+        if (tdArr.length === 0) return undefined;
         const convertToNumber = (str) => {
+          if (!str || typeof str !== "string") return undefined;
           return parseFloat(str.replace(/ g/, ""));
         };
         const nutrition = [...tdArr].reduce((prevVal, curVal, index) => {
-          if (curVal.textContent === "Vet")
-            return {
-              ...prevVal,
-              fats: convertToNumber(tdArr[index + 1].textContent),
-            };
-          if (curVal.textContent === "Koolhydraten")
-            return {
-              ...prevVal,
-              carbohydrates: convertToNumber(tdArr[index + 1].textContent),
-            };
-          if (curVal.textContent === "Eiwitten")
-            return {
-              ...prevVal,
-              proteins: convertToNumber(tdArr[index + 1].textContent),
-            };
+          switch (curVal?.textContent?.toLowerCase()) {
+            case "vet":
+              return {
+                ...prevVal,
+                fats: convertToNumber(tdArr[index + 1]?.textContent),
+              };
+            case "koolhydraten":
+              return {
+                ...prevVal,
+                carbohydrates: convertToNumber(tdArr[index + 1]?.textContent),
+              };
+            case "eiwitten":
+              return {
+                ...prevVal,
+                proteins: convertToNumber(tdArr[index + 1]?.textContent),
+              };
+          }
           return prevVal;
         }, {});
         return nutrition;
@@ -64,13 +61,14 @@ const getFood = async (url, page) => {
       // PORTION SIZE
       const getPortionSize = () => {
         const dlNodeList = document.querySelectorAll("dl");
+        if (dlNodeList.length === 0) return undefined;
         const portionSize = [...dlNodeList].reduce((prevVal, curVal, index) => {
           const dt = curVal.querySelector("dt");
-          if (!dt.textContent.match(/Portiegrootte/)) return prevVal;
+          if (!dt?.textContent?.match(/Portiegrootte/)) return prevVal;
           const dd = dlNodeList[index].querySelector("dd");
-          return dd.textContent;
+          return dd?.textContent;
         }, null);
-        return portionSize.match(regex)[0];
+        return portionSize?.match(regex)[0];
       };
 
       // PACKAGE SIZE
@@ -78,10 +76,13 @@ const getFood = async (url, page) => {
         const productInfoNodeList = document.querySelectorAll(
           ".product-info-content-block"
         );
+        if (productInfoNodeList.length === 0) return undefined;
         const productInfo = [...productInfoNodeList].find((item) =>
-          item.querySelector("h4").textContent.match(/gewicht/i) ? true : false
+          item.querySelector("h4")?.textContent?.match(/gewicht/i)
+            ? true
+            : false
         );
-        return productInfo.querySelector("h4 + p").textContent;
+        return productInfo.querySelector("h4 + p")?.textContent;
       };
 
       const title = getTitle();
