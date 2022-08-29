@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
-import getFood from "./ah.js";
-import config from "./config.js";
+import getFood from "./get-ah.js";
+import config from "../../config.js";
 
 const scrap = async (urls) => {
   const browser = await puppeteer.launch();

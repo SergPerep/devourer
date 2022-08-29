@@ -1,6 +1,6 @@
 // import handleError from "./utils/handleError.js";
 import log from "./utils/log.js";
-import scrap from "./scrap.js";
+import scrap from "./components/scrap/scrap.js";
 import fs from "fs";
 const args = process.argv;
 const inputStr = args[2];
@@ -17,8 +17,6 @@ const route = (inputStr) => {
 };
 
 route(inputStr);
-
-// scrap(urls);
 
 // process.on("uncaughtException", (err) => {
 //   handleError(err);
