@@ -1,9 +1,16 @@
-// import handleError from "./utils/handleError.js";
 import log from "./utils/log.js";
 import scrap from "./components/scrap/scrap.js";
 import fs from "fs";
+import handleError from "./components/errors/handleError.js";
+
 const args = process.argv;
 const inputStr = args[2];
+
+// Handle uncaught errors
+process.on("uncaughtException", (err) => {
+  handleError(err);
+  process.exit(1); // mandatory (as per the Node.js docs)
+});
 
 const route = (inputStr) => {
   // If inputStr is a url
@@ -17,8 +24,3 @@ const route = (inputStr) => {
 };
 
 route(inputStr);
-
-// process.on("uncaughtException", (err) => {
-//   handleError(err);
-//   process.exit(1); // mandatory (as per the Node.js docs)
-// });
