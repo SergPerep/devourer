@@ -1,3 +1,4 @@
+import formatAmount from "../../utils/formatAmount.js";
 const getFood = async (url, page) => {
   try {
     await page.goto(url);
@@ -100,7 +101,16 @@ const getFood = async (url, page) => {
         portionSize,
       };
     });
-    return foodItem;
+    return {
+      title: foodItem.title,
+      brand: foodItem.brand,
+      packageSize: formatAmount(foodItem.packageSize),
+      portionSize: formatAmount(foodItem.portionSize),
+      per: formatAmount(foodItem.per),
+      fats: foodItem.fats,
+      carbohydrates: foodItem.carbohydrates,
+      proteins: foodItem.proteins,
+    };
   } catch (error) {
     return console.error(error);
   }
