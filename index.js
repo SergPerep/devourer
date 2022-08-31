@@ -1,6 +1,7 @@
-import log from "./utils/log.js";
+import { AppError } from "./components/errors/appErrors.js";
 import scrap from "./components/scrap/scrap.js";
 import fs from "fs";
+import path from "path";
 import handleError from "./components/errors/handleError.js";
 
 const args = process.argv;
@@ -17,9 +18,12 @@ const route = (inputStr) => {
   const urlRegex = /(https|http):\/\//i;
   if (inputStr.search(urlRegex) !== -1) return scrap([inputStr]);
   // If inputStr is a path to a file
+  if (path.extname(inputStr) !== ".json")
+    throw new AppError("Provided file is not .json: " + inputStr);
   const buf = fs.readFileSync(inputStr);
   const urlArr = JSON.parse(buf.toString());
-  if (!(urlArr instanceof Array)) return log.red("~~ Not array");
+  if (!(urlArr instanceof Array))
+    throw new AppError("JSON file doesn't have an array inside: " + inputStr);
   scrap(urlArr);
 };
 
