@@ -3,7 +3,7 @@ const getFood = async (url, page) => {
   try {
     await page.goto(url);
     const foodItem = await page.evaluate(() => {
-      const regex = /\d+ *(gram|ml|l|g|milliliter|liter|kilogram)/i;
+      const regex = /\d+\.*\d+ *(gram|ml|l|g|milliliter|liter|kilogram)/i;
 
       // TITLE
       const getTitle = () => {
