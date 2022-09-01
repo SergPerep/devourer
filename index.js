@@ -3,6 +3,7 @@ import scrape from "./components/scrape/scrape.js";
 import fs from "fs";
 import path from "path";
 import handleError from "./components/errors/handleError.js";
+import handleResults from "./components/handleResults.js";
 
 const args = process.argv;
 const inputStr = args[2];
@@ -13,10 +14,11 @@ process.on("uncaughtException", (err) => {
   process.exit(1); // mandatory (as per the Node.js docs)
 });
 
-const route = (inputStr) => {
+const route = async (inputStr) => {
   // If inputStr is a url
   const urlRegex = /(https|http):\/\//i;
-  if (inputStr.search(urlRegex) !== -1) return scrape([inputStr]);
+  if (inputStr.search(urlRegex) !== -1) return await scrape([inputStr]);
+
   // If inputStr is a path to a file
   if (path.extname(inputStr) !== ".json")
     throw new AppError("Provided file is not .json: " + inputStr);
@@ -24,7 +26,10 @@ const route = (inputStr) => {
   const urlArr = JSON.parse(buf.toString());
   if (!(urlArr instanceof Array))
     throw new AppError("JSON file doesn't have an array inside: " + inputStr);
-  scrape(urlArr);
+
+  return await scrape(urlArr);
 };
 
-route(inputStr);
+const foods = await route(inputStr);
+
+handleResults(foods);
