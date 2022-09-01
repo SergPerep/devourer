@@ -1,5 +1,5 @@
 import { AppError } from "./components/errors/appErrors.js";
-import scrap from "./components/scrap/scrap.js";
+import scrape from "./components/scrape/scrape.js";
 import fs from "fs";
 import path from "path";
 import handleError from "./components/errors/handleError.js";
@@ -16,7 +16,7 @@ process.on("uncaughtException", (err) => {
 const route = (inputStr) => {
   // If inputStr is a url
   const urlRegex = /(https|http):\/\//i;
-  if (inputStr.search(urlRegex) !== -1) return scrap([inputStr]);
+  if (inputStr.search(urlRegex) !== -1) return scrape([inputStr]);
   // If inputStr is a path to a file
   if (path.extname(inputStr) !== ".json")
     throw new AppError("Provided file is not .json: " + inputStr);
@@ -24,7 +24,7 @@ const route = (inputStr) => {
   const urlArr = JSON.parse(buf.toString());
   if (!(urlArr instanceof Array))
     throw new AppError("JSON file doesn't have an array inside: " + inputStr);
-  scrap(urlArr);
+  scrape(urlArr);
 };
 
 route(inputStr);

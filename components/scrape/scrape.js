@@ -2,6 +2,7 @@ import puppeteer from "puppeteer";
 import getFood from "./get-ah.js";
 import config from "../../config.js";
 import ora from "ora";
+import fs from "fs";
 
 const scrap = async (urls) => {
   const spinner = ora("Scanning page").start();
@@ -25,6 +26,12 @@ const scrap = async (urls) => {
       console.table(foods);
     } else {
       console.log(foods);
+    }
+    if (
+      config.printResultsIntoJSON &&
+      typeof config.printResultsIntoJSON === "string"
+    ) {
+      fs.writeFileSync(config.printResultsIntoJSON, JSON.stringify(foods));
     }
   } catch (error) {
     spinner.stop();
