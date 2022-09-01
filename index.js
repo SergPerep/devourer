@@ -14,11 +14,17 @@ process.on("uncaughtException", (err) => {
   process.exit(1); // mandatory (as per the Node.js docs)
 });
 
-const route = async (inputStr) => {
-  // If inputStr is a url
+const checkIfUrl = (inputStr) => {
   const urlRegex = /(https|http):\/\//i;
-  if (inputStr.search(urlRegex) !== -1) return await scrape([inputStr]);
+  return inputStr.search(urlRegex) !== -1;
+};
 
+let foods;
+
+// If inputStr is a url
+if (checkIfUrl(inputStr)) {
+  foods = scrape([inputStr]);
+} else {
   // If inputStr is a path to a file
   if (path.extname(inputStr) !== ".json")
     throw new AppError("Provided file is not .json: " + inputStr);
@@ -27,9 +33,7 @@ const route = async (inputStr) => {
   if (!(urlArr instanceof Array))
     throw new AppError("JSON file doesn't have an array inside: " + inputStr);
 
-  return await scrape(urlArr);
-};
-
-const foods = await route(inputStr);
+  foods = scrape(urlArr);
+}
 
 handleResults(foods);
