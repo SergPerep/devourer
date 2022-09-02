@@ -1,7 +1,7 @@
 // Converts amount of product to appropriate format
 // 1 kg -> 1000 g
 // 2.5 l -> 2500 ml
-const formatAmount = (amountStr) => {
+const formatAmount = (amountStr, options = { outputType: "string" }) => {
   let value = parseFloat(amountStr);
   if (!value) return amountStr;
   let unitsArr = amountStr.match(/(gram|g|milliliter|ml|liter|l|kilogram|kg)/i);
@@ -24,7 +24,8 @@ const formatAmount = (amountStr) => {
     case "milliliter":
       units = "ml";
   }
-  return `${value} ${units}`;
+  if (options?.outputType === "object") return { value, units };
+  if (options?.outputType === "string" || true) return `${value} ${units}`;
 };
 
 export default formatAmount;

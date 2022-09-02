@@ -104,8 +104,12 @@ const getFood = async (url, page) => {
     return {
       title: foodItem.title,
       brand: foodItem.brand,
-      packageSize: formatAmount(foodItem.packageSize),
-      portionSize: formatAmount(foodItem.portionSize),
+      units: formatAmount(foodItem.packageSize, { outputType: "object" })
+        ?.units,
+      packageSize: formatAmount(foodItem.packageSize, { outputType: "object" })
+        ?.value,
+      // portionSize: formatAmount(foodItem.portionSize, { outputType: "object" })
+      //   ?.value,
       per: formatAmount(foodItem.per),
       fats: foodItem.fats,
       carbohydrates: foodItem.carbohydrates,
