@@ -1,6 +1,6 @@
 const config = {
   logResultsAs: "tables",
-  printResultsIntoJSON: "output/output.json",
+  // printResultsIntoJSON: "output/output.json",
 };
 
 export default config;

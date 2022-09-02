@@ -18,22 +18,20 @@ const checkIfUrl = (inputStr) => {
   const urlRegex = /(https|http):\/\//i;
   return inputStr.search(urlRegex) !== -1;
 };
-
-let foods;
-
-// If inputStr is a url
-if (checkIfUrl(inputStr)) {
-  foods = scrape([inputStr]);
-} else {
-  // If inputStr is a path to a file
-  if (path.extname(inputStr) !== ".json")
-    throw new AppError("Provided file is not .json: " + inputStr);
-  const buf = fs.readFileSync(inputStr);
-  const urlArr = JSON.parse(buf.toString());
-  if (!(urlArr instanceof Array))
-    throw new AppError("JSON file doesn't have an array inside: " + inputStr);
-
-  foods = scrape(urlArr);
-}
-
-handleResults(foods);
+(async () => {
+  let foods;
+  // If inputStr is a url
+  if (checkIfUrl(inputStr)) {
+    foods = await scrape([inputStr]);
+  } else {
+    // If inputStr is a path to a file
+    if (path.extname(inputStr) !== ".json")
+      throw new AppError("Provided file is not .json: " + inputStr);
+    const buf = fs.readFileSync(inputStr);
+    const urlArr = JSON.parse(buf.toString());
+    if (!(urlArr instanceof Array))
+      throw new AppError("JSON file doesn't have an array inside: " + inputStr);
+    foods = await scrape(urlArr);
+  }
+  handleResults(foods);
+})();
