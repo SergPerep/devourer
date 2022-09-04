@@ -1,5 +1,5 @@
 import formatAmount from "../../utils/formatAmount.js";
-const getFood = async (url, page) => {
+const getAHFood = async (url, page) => {
   try {
     await page.goto(url);
     const foodItem = await page.evaluate(() => {
@@ -122,4 +122,4 @@ const getFood = async (url, page) => {
   }
 };
 
-export default getFood;
+export default getAHFood;
