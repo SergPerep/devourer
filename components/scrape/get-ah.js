@@ -103,6 +103,8 @@ const getFood = async (url, page) => {
     });
     return {
       title: foodItem.title,
+      // url,
+      storeName: "ah",
       brand: foodItem.brand,
       units: formatAmount(foodItem.packageSize, { outputType: "object" })
         ?.units,

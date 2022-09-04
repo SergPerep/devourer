@@ -1,8 +1,9 @@
 import puppeteer from "puppeteer";
 import getFood from "./get-ah.js";
 import ora from "ora";
+import validateUrl from "../../utils/validateUrl.js";
 
-const scrap = async (urls) => {
+const scrape = async (urls) => {
   const spinner = ora("Scanning page").start();
 
   spinner.color = "magenta";
@@ -15,7 +16,21 @@ const scrap = async (urls) => {
     let foods = [];
     for (const url of urls) {
       spinner.text = `Scanning page: ${url}`;
-      const food = await getFood(url, page);
+      const storeName = validateUrl(url);
+      let food = {};
+      switch (storeName) {
+        case "ah":
+          food = await getFood(url, page);
+          break;
+        case "jumbo":
+          food = undefined;
+          break;
+        case "walmart":
+          food = undefined;
+          break;
+        default:
+          food = undefined;
+      }
       foods = [...foods, food];
     }
 
@@ -29,4 +44,4 @@ const scrap = async (urls) => {
   }
 };
 
-export default scrap;
+export default scrape;
