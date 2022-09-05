@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 import getAHFood from "./getAHFood.js";
+import getJumboFood from "./getJumboFood.js";
 import ora from "ora";
 import validateUrl from "../../utils/validateUrl.js";
 
@@ -23,7 +24,7 @@ const scrape = async (urls) => {
           food = await getAHFood(url, page);
           break;
         case "jumbo":
-          food = undefined;
+          food = await getJumboFood(url, page);
           break;
         case "walmart":
           food = undefined;

@@ -1,5 +1,5 @@
 const config = {
-  logResultsAs: "tables",
+  // logResultsAs: "tables",
   // printResultsIntoJSON: "output/output.json",
 };
 
