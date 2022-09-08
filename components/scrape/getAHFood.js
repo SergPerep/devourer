@@ -1,4 +1,5 @@
 import formatAmount from "../../utils/formatAmount.js";
+import formatCalories from "../../utils/formatCalories.js";
 const getAHFood = async (url, page) => {
   try {
     await page.goto(url);
@@ -38,6 +39,11 @@ const getAHFood = async (url, page) => {
         };
         const nutrition = [...tdArr].reduce((prevVal, curVal, index) => {
           switch (curVal?.textContent?.toLowerCase()) {
+            case "energie":
+              return {
+                ...prevVal,
+                energy: tdArr[index + 1]?.textContent,
+              };
             case "vet":
               return {
                 ...prevVal,
@@ -101,6 +107,7 @@ const getAHFood = async (url, page) => {
         portionSize,
       };
     });
+
     return {
       title: foodItem.title,
       // url,
@@ -108,11 +115,13 @@ const getAHFood = async (url, page) => {
       brand: foodItem.brand,
       units: formatAmount(foodItem.packageSize, { outputType: "object" })
         ?.units,
+
       packageSize: formatAmount(foodItem.packageSize, { outputType: "object" })
         ?.value,
       // portionSize: formatAmount(foodItem.portionSize, { outputType: "object" })
       //   ?.value,
       per: formatAmount(foodItem.per),
+      kcal: formatCalories(foodItem.energy),
       fats: foodItem.fats,
       carbohydrates: foodItem.carbohydrates,
       proteins: foodItem.proteins,
