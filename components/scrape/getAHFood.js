@@ -97,34 +97,35 @@ const getAHFood = async (url, page) => {
       const packageSize = getPackageSize();
       const per = getPer();
       const nutrition = getNutrition();
-      const portionSize = getPortionSize();
+      // const portionSize = getPortionSize();
       return {
         title,
         brand,
         packageSize,
         per,
         ...nutrition,
-        portionSize,
+        // portionSize,
       };
     });
 
     return {
-      title: foodItem.title,
+      name: { nl: foodItem.title },
       // url,
-      storeName: "ah",
-      brand: foodItem.brand,
-      units: formatAmount(foodItem.packageSize, { outputType: "object" })
-        ?.units,
+      // storeName: "ah",
+      brands: [foodItem.brand],
+      unit: formatAmount(foodItem.packageSize, { outputType: "object" })?.unit,
 
       packageSize: formatAmount(foodItem.packageSize, { outputType: "object" })
         ?.value,
       // portionSize: formatAmount(foodItem.portionSize, { outputType: "object" })
       //   ?.value,
-      per: formatAmount(foodItem.per),
-      kcal: formatCalories(foodItem.energy),
-      fats: foodItem.fats,
-      carbohydrates: foodItem.carbohydrates,
-      proteins: foodItem.proteins,
+      nutrition: {
+        per: formatAmount(foodItem.per),
+        kcal: formatCalories(foodItem.energy),
+        fats: foodItem.fats,
+        carbohydrates: foodItem.carbohydrates,
+        proteins: foodItem.proteins,
+      },
     };
   } catch (error) {
     return console.error(error);

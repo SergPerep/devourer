@@ -6,26 +6,26 @@ const formatAmount = (amountStr, options = { outputType: "string" }) => {
   if (!value) return amountStr;
   let unitsArr = amountStr.match(/(gram|g|milliliter|ml|liter|l|kilogram|kg)/i);
   if (!(unitsArr instanceof Array)) return amountStr;
-  let units = unitsArr[0]?.toLowerCase();
-  switch (units) {
+  let unit = unitsArr[0]?.toLowerCase();
+  switch (unit) {
     case "liter":
     case "l":
       value = value * 1000;
-      units = "ml";
+      unit = "ml";
       break;
     case "kilogram":
     case "kg":
       value = value * 1000;
-      units = "g";
+      unit = "g";
       break;
     case "gram":
-      units = "g";
+      unit = "g";
       break;
     case "milliliter":
-      units = "ml";
+      unit = "ml";
   }
-  if (options?.outputType === "object") return { value, units };
-  if (options?.outputType === "string" || true) return `${value} ${units}`;
+  if (options?.outputType === "object") return { value, unit };
+  if (options?.outputType === "string" || true) return `${value} ${unit}`;
 };
 
 export default formatAmount;
